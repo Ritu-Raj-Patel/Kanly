@@ -23,17 +23,18 @@ interface ColumnProps {
   onAddTask: () => void
   onEditTask: (task: Task) => void
   onDeleteColumn?: () => void
+  fullWidth?: boolean
 }
 
-export default function Column({ id, name, tasks, onAddTask, onEditTask, onDeleteColumn }: ColumnProps) {
+export default function Column({ id, name, tasks, onAddTask, onEditTask, onDeleteColumn, fullWidth }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col glass-column rounded-2xl p-4 w-80 flex-shrink-0 transition-all duration-200 ${
-        isOver ? 'ring-2 ring-gray-300 ring-opacity-50' : ''
-      }`}
+      className={`flex flex-col glass-column rounded-2xl p-4 transition-all duration-200 ${
+        fullWidth ? 'w-full' : 'w-80 flex-shrink-0'
+      } ${isOver ? 'ring-2 ring-gray-300 ring-opacity-50' : ''}`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

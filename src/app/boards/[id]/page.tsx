@@ -18,9 +18,11 @@ import {
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable'
 import Column from '@/components/Column'
+import MobileColumnNav from '@/components/MobileColumnNav'
 import TaskCard from '@/components/TaskCard'
 import TaskModal from '@/components/TaskModal'
 import ColumnModal from '@/components/ColumnModal'
+import { useBoardContext } from '@/contexts/BoardContext'
 import { boardsApi, tasksApi, columnsApi } from '@/lib/api/client'
 
 interface Task {
@@ -50,10 +52,21 @@ interface PageProps {
 export default function BoardDetailPage({ params }: PageProps) {
   const { status } = useSession()
   const router = useRouter()
+  const {
+    setBoard: setBoardInContext,
+    setColumns: setColumnsInContext,
+    activeColumnId,
+    setActiveColumnId,
+    setIsNavVisible,
+    isNavVisible,
+    toggleNavVisible,
+  } = useBoardContext()
+
   const [board, setBoard] = useState<any>(null)
   const [columns, setColumns] = useState<ColumnData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Modal states
   const [taskModalOpen, setTaskModalOpen] = useState(false)
@@ -98,8 +111,42 @@ export default function BoardDetailPage({ params }: PageProps) {
     }
   }, [status, router, loadBoardData])
 
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 767px)')
+    const update = () => setIsMobile(mql.matches)
+    update()
+    mql.addEventListener('change', update)
+    return () => mql.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    setBoardInContext(board)
+    return () => setBoardInContext(null)
+  }, [board, setBoardInContext])
+
+  useEffect(() => {
+    setColumnsInContext(columns)
+  }, [columns, setColumnsInContext])
+
+  useEffect(() => {
+    if (columns.length === 0) {
+      setActiveColumnId(null)
+      return
+    }
+
+    if (!activeColumnId || !columns.some((c) => c.id === activeColumnId)) {
+      setActiveColumnId(columns[0].id)
+    }
+  }, [columns, activeColumnId, setActiveColumnId])
+
   const findColumnByTaskId = (taskId: string): ColumnData | undefined => {
     return columns.find((col) => col.tasks.some((task) => task.id === taskId))
+  }
+
+  const handleMobileColumnSelect = (columnId: string) => {
+    setActiveColumnId(columnId)
+    setIsNavVisible(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -351,7 +398,7 @@ export default function BoardDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3 items-center">
             <button
               onClick={() => setColumnModalOpen(true)}
               className="glass-button px-4 py-2 rounded-xl text-gray-700 font-medium text-sm flex items-center gap-2"
@@ -361,6 +408,19 @@ export default function BoardDetailPage({ params }: PageProps) {
               </svg>
               Add Column
             </button>
+
+            {/* Mobile: Column navigation toggle aligned with actions */}
+            <button
+              onClick={toggleNavVisible}
+              className="md:hidden glass-button px-4 py-2 rounded-xl text-gray-700 font-medium text-sm flex items-center justify-center"
+              aria-label={isNavVisible ? 'Hide column navigation' : 'Show column navigation'}
+              title={isNavVisible ? 'Hide columns' : 'Show columns'}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
             <button
               onClick={handleDeleteBoard}
               className="px-4 py-2 rounded-xl text-red-600 hover:bg-red-50 font-medium text-sm transition-colors"
@@ -372,7 +432,7 @@ export default function BoardDetailPage({ params }: PageProps) {
       </div>
 
       {/* Kanban Board */}
-      <div className="overflow-x-auto pb-4">
+      <div className={isMobile ? 'pb-4' : 'overflow-x-auto pb-4'}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
@@ -380,32 +440,56 @@ export default function BoardDetailPage({ params }: PageProps) {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-6 min-w-max px-4 sm:px-0">
-            {columns.map((column) => (
-              <Column
-                key={column.id}
-                id={column.id}
-                name={column.name}
-                tasks={column.tasks}
-                onAddTask={() => handleAddTask(column.id)}
-                onEditTask={handleEditTask}
-                onDeleteColumn={() => handleDeleteColumn(column.id)}
-              />
-            ))}
+          {isMobile ? (
+            <div className="relative px-0">
+              <MobileColumnNav onColumnSelect={handleMobileColumnSelect} showToggle={false} />
+              {(() => {
+                const activeColumn = columns.find((c) => c.id === activeColumnId) || columns[0]
+                if (!activeColumn) return null
+                return (
+                  <div className={`px-4 ${isNavVisible ? 'pr-16' : ''}`}>
+                    <Column
+                      key={activeColumn.id}
+                      id={activeColumn.id}
+                      name={activeColumn.name}
+                      tasks={activeColumn.tasks}
+                      onAddTask={() => handleAddTask(activeColumn.id)}
+                      onEditTask={handleEditTask}
+                      onDeleteColumn={() => handleDeleteColumn(activeColumn.id)}
+                      fullWidth
+                    />
+                  </div>
+                )
+              })()}
+            </div>
+          ) : (
+            <div className="flex gap-6 min-w-max px-4 sm:px-0">
+              {columns.map((column) => (
+                <Column
+                  key={column.id}
+                  id={column.id}
+                  name={column.name}
+                  tasks={column.tasks}
+                  onAddTask={() => handleAddTask(column.id)}
+                  onEditTask={handleEditTask}
+                  onDeleteColumn={() => handleDeleteColumn(column.id)}
+                />
+              ))}
 
-            {/* Add Column Placeholder */}
-            <button
-              onClick={() => setColumnModalOpen(true)}
-              className="w-80 flex-shrink-0 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center text-gray-400 hover:text-gray-500 hover:border-gray-400 transition-colors min-h-[200px]"
-            >
-              <div className="text-center">
-                <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span className="font-medium">Add Column</span>
-              </div>
-            </button>
-          </div>
+              {/* Add Column Placeholder */}
+              <button
+                onClick={() => setColumnModalOpen(true)}
+                className="w-80 flex-shrink-0 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center text-gray-400 hover:text-gray-500 hover:border-gray-400 transition-colors min-h-[200px]"
+              >
+                <div className="text-center">
+                  <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="font-medium">Add Column</span>
+                </div>
+              </button>
+            </div>
+          )}
 
           <DragOverlay>
             {activeTask ? (
