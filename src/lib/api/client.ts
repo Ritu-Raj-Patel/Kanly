@@ -19,6 +19,11 @@ async function apiFetch<T>(url: string, options: FetchOptions = {}): Promise<T> 
 
   const response = await fetch(url, config)
 
+  const contentType = response.headers.get('content-type')
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error('Server error: Please check if environment variables are configured correctly')
+  }
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Request failed' }))
     throw new Error(error.error || `HTTP ${response.status}`)

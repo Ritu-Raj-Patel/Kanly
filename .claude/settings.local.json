@@ -3,7 +3,8 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(npx create-next-app:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
