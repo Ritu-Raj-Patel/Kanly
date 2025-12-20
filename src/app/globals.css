@@ -155,3 +155,272 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+@keyframes fluent-card-in {
+  0% {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateX(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fluent-card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.fluent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14);
+  filter: brightness(0.99);
+}
+
+.fluent-card:active {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.13);
+}
+
+/* Funnel card being hovered with a task - soft glow highlight */
+.fluent-card-over {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(255, 255, 255, 0.7),
+    0 0 24px rgba(255, 255, 255, 0.4),
+    0 0 48px rgba(255, 255, 255, 0.2);
+  filter: brightness(1.05);
+}
+
+/* Color-specific glow effects for funnel cards */
+.fluent-card-over.bg-rose-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(251, 113, 133, 0.5),
+    0 0 28px rgba(251, 113, 133, 0.35);
+}
+
+.fluent-card-over.bg-amber-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(251, 191, 36, 0.5),
+    0 0 28px rgba(251, 191, 36, 0.35);
+}
+
+.fluent-card-over.bg-lime-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(163, 230, 53, 0.5),
+    0 0 28px rgba(163, 230, 53, 0.35);
+}
+
+.fluent-card-over.bg-emerald-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(52, 211, 153, 0.5),
+    0 0 28px rgba(52, 211, 153, 0.35);
+}
+
+.fluent-card-over.bg-sky-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(56, 189, 248, 0.5),
+    0 0 28px rgba(56, 189, 248, 0.35);
+}
+
+.fluent-card-over.bg-indigo-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(129, 140, 248, 0.5),
+    0 0 28px rgba(129, 140, 248, 0.35);
+}
+
+.fluent-card-over.bg-fuchsia-100 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.22),
+    0 0 0 3px rgba(232, 121, 249, 0.5),
+    0 0 28px rgba(232, 121, 249, 0.35);
+}
+
+/* Active (selected) column glow override */
+.fluent-card-over.bg-gray-900 {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 3px rgba(255, 255, 255, 0.6),
+    0 0 28px rgba(255, 255, 255, 0.3);
+}
+
+.fluent-card-in {
+  animation: fluent-card-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Drop success pulse - visual confirmation animation */
+@keyframes fluent-drop-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.12),
+      0 0 0 0 rgba(74, 222, 128, 0);
+  }
+  30% {
+    transform: scale(1.04);
+    box-shadow:
+      0 18px 44px rgba(0, 0, 0, 0.18),
+      0 0 0 4px rgba(74, 222, 128, 0.6),
+      0 0 32px rgba(74, 222, 128, 0.4);
+  }
+  60% {
+    transform: scale(0.98);
+    box-shadow:
+      0 14px 36px rgba(0, 0, 0, 0.15),
+      0 0 0 2px rgba(74, 222, 128, 0.3),
+      0 0 16px rgba(74, 222, 128, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.12),
+      0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+.fluent-card-drop {
+  animation: fluent-drop-pulse 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Task snap-into-place animation */
+@keyframes task-snap-in {
+  0% {
+    opacity: 0.7;
+    transform: scale(1.05) translateY(-8px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(0.98) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.task-snap-in {
+  animation: task-snap-in 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Mobile drag backdrop - subtle pulse to indicate drop zones are active */
+@keyframes drag-backdrop-pulse {
+  0%, 100% {
+    background: rgba(0, 0, 0, 0.02);
+  }
+  50% {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.drag-active-backdrop {
+  animation: drag-backdrop-pulse 2s ease-in-out infinite;
+}
+
+/* Funnel card idle breathing effect when drag is active */
+@keyframes funnel-breathe {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.funnel-ready {
+  animation: funnel-breathe 1.5s ease-in-out infinite;
+}
+
+/* Enhance touch feedback on mobile */
+@media (pointer: coarse) {
+  .task-card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+  }
+
+  .task-card:active:not(.task-card-dragging) {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .fluent-card {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Task Card - Fluent Design drag-and-drop */
+.task-card {
+  position: relative;
+  transition:
+    transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), /* Spring-like overshoot */
+    box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 200ms ease-out;
+  will-change: transform, box-shadow, opacity;
+}
+
+/* Slight lift on touch/hover before drag starts */
+.task-card:active:not(.task-card-dragging) {
+  transform: scale(0.98);
+  transition: transform 100ms ease-out;
+}
+
+/* Dragging state - elevated with shadow and slight scale */
+.task-card-dragging {
+  opacity: 0.88;
+  transform: scale(1.03) rotate(1.5deg);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.22),
+    0 12px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.4);
+  z-index: 1000;
+  cursor: grabbing !important;
+}
+
+/* Drag overlay card (the floating clone) */
+.task-card-overlay {
+  transform: scale(1.02);
+  box-shadow:
+    0 28px 56px rgba(0, 0, 0, 0.25),
+    0 14px 28px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fluent-card-in {
+    animation: none;
+  }
+  .fluent-card {
+    transition: none;
+  }
+  .fluent-card-drop {
+    animation: none;
+  }
+  .task-card {
+    transition: none;
+  }
+  .task-snap-in {
+    animation: none;
+  }
+  .fluent-card-over {
+    transition: none;
+    transform: none;
+  }
+}

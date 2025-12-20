@@ -67,6 +67,7 @@ export default function BoardDetailPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [mobileDropPulseColumnId, setMobileDropPulseColumnId] = useState<string | null>(null)
 
   // Modal states
   const [taskModalOpen, setTaskModalOpen] = useState(false)
@@ -78,7 +79,9 @@ export default function BoardDetailPage({ params }: PageProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        ...(isMobile
+          ? { delay: 250, tolerance: 6 }
+          : { distance: 8 }),
       },
     }),
     useSensor(KeyboardSensor, {
@@ -143,6 +146,8 @@ export default function BoardDetailPage({ params }: PageProps) {
     return columns.find((col) => col.tasks.some((task) => task.id === taskId))
   }
 
+  const normalizeOverId = (id: string) => (id.startsWith('funnel:') ? id.slice('funnel:'.length) : id)
+
   const handleMobileColumnSelect = (columnId: string) => {
     setActiveColumnId(columnId)
     setIsNavVisible(false)
@@ -156,6 +161,10 @@ export default function BoardDetailPage({ params }: PageProps) {
       const task = column.tasks.find((t) => t.id === active.id)
       if (task) setActiveTask(task)
     }
+
+    if (isMobile) {
+      setIsNavVisible(true)
+    }
   }
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -163,7 +172,7 @@ export default function BoardDetailPage({ params }: PageProps) {
     if (!over) return
 
     const activeId = active.id as string
-    const overId = over.id as string
+    const overId = normalizeOverId(over.id as string)
 
     const activeColumn = findColumnByTaskId(activeId)
     let overColumn = findColumnByTaskId(overId)
@@ -205,10 +214,13 @@ export default function BoardDetailPage({ params }: PageProps) {
     const { active, over } = event
     setActiveTask(null)
 
-    if (!over) return
+    if (!over) {
+      if (isMobile && isNavVisible) setIsNavVisible(false)
+      return
+    }
 
     const activeId = active.id as string
-    const overId = over.id as string
+    const overId = normalizeOverId(over.id as string)
 
     const activeColumn = findColumnByTaskId(activeId)
     let overColumn = findColumnByTaskId(overId)
@@ -217,14 +229,22 @@ export default function BoardDetailPage({ params }: PageProps) {
       overColumn = columns.find((col) => col.id === overId)
     }
 
-    if (!activeColumn || !overColumn) return
+    if (!activeColumn || !overColumn) {
+      if (isMobile && isNavVisible) setIsNavVisible(false)
+      return
+    }
 
     if (activeColumn.id === overColumn.id) {
       // Reordering within the same column
       const oldIndex = activeColumn.tasks.findIndex((t) => t.id === activeId)
-      const newIndex = activeColumn.tasks.findIndex((t) => t.id === overId)
+      let newIndex = activeColumn.tasks.findIndex((t) => t.id === overId)
 
-      if (oldIndex !== newIndex) {
+      // If dropped on the column itself (funnel card), move to end of column
+      if (newIndex < 0) {
+        newIndex = activeColumn.tasks.length - 1
+      }
+
+      if (oldIndex !== newIndex && oldIndex >= 0 && newIndex >= 0) {
         setColumns((prev) =>
           prev.map((col) => {
             if (col.id === activeColumn.id) {
@@ -258,10 +278,18 @@ export default function BoardDetailPage({ params }: PageProps) {
           column_id: overColumn.id,
           position,
         })
+        if (isMobile) {
+          setMobileDropPulseColumnId(overColumn.id)
+          window.setTimeout(() => setMobileDropPulseColumnId(null), 420)
+        }
       } catch (err) {
         console.error('Failed to move task:', err)
         loadBoardData() // Reload on error
       }
+    }
+
+    if (isMobile && isNavVisible) {
+      setIsNavVisible(false)
     }
   }
 
@@ -439,15 +467,19 @@ export default function BoardDetailPage({ params }: PageProps) {
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
+          onDragCancel={() => {
+            setActiveTask(null)
+            if (isMobile && isNavVisible) setIsNavVisible(false)
+          }}
         >
           {isMobile ? (
             <div className="relative px-0">
-              <MobileColumnNav onColumnSelect={handleMobileColumnSelect} showToggle={false} />
+              <MobileColumnNav onColumnSelect={handleMobileColumnSelect} showToggle={false} dropPulseColumnId={mobileDropPulseColumnId} isDragActive={Boolean(activeTask)} />
               {(() => {
                 const activeColumn = columns.find((c) => c.id === activeColumnId) || columns[0]
                 if (!activeColumn) return null
                 return (
-                  <div className={`px-4 ${isNavVisible ? 'pr-16' : ''}`}>
+                  <div className="px-4">
                     <Column
                       key={activeColumn.id}
                       id={activeColumn.id}
@@ -457,6 +489,7 @@ export default function BoardDetailPage({ params }: PageProps) {
                       onEditTask={handleEditTask}
                       onDeleteColumn={() => handleDeleteColumn(activeColumn.id)}
                       fullWidth
+                      onTaskLongPress={() => setIsNavVisible(true)}
                     />
                   </div>
                 )
@@ -491,7 +524,12 @@ export default function BoardDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          <DragOverlay>
+          <DragOverlay
+            dropAnimation={{
+              duration: 280,
+              easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
             {activeTask ? (
               <TaskCard
                 id={activeTask.id}
@@ -501,6 +539,7 @@ export default function BoardDetailPage({ params }: PageProps) {
                 dueDate={activeTask.due_date}
                 labels={activeTask.labels}
                 isDragging
+                isOverlay
               />
             ) : null}
           </DragOverlay>

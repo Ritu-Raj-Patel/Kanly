@@ -24,9 +24,10 @@ interface ColumnProps {
   onEditTask: (task: Task) => void
   onDeleteColumn?: () => void
   fullWidth?: boolean
+  onTaskLongPress?: () => void
 }
 
-export default function Column({ id, name, tasks, onAddTask, onEditTask, onDeleteColumn, fullWidth }: ColumnProps) {
+export default function Column({ id, name, tasks, onAddTask, onEditTask, onDeleteColumn, fullWidth, onTaskLongPress }: ColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
@@ -73,6 +74,7 @@ export default function Column({ id, name, tasks, onAddTask, onEditTask, onDelet
                 dueDate={task.dueDate || task.due_date}
                 labels={task.labels}
                 onEdit={() => onEditTask(task)}
+                onLongPress={onTaskLongPress}
               />
             ))
           )}

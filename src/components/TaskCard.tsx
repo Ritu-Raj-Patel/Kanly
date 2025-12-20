@@ -12,6 +12,9 @@ interface TaskCardProps {
   labels?: Array<{ name: string; color?: string }>
   onEdit?: () => void
   isDragging?: boolean
+  isOverlay?: boolean
+  onLongPress?: () => void
+  longPressDelayMs?: number
 }
 
 const priorityConfig = {
@@ -29,6 +32,9 @@ export default function TaskCard({
   labels = [],
   onEdit,
   isDragging,
+  isOverlay,
+  onLongPress,
+  longPressDelayMs = 260,
 }: TaskCardProps) {
   const {
     attributes,
@@ -67,9 +73,47 @@ export default function TaskCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`glass-card rounded-xl p-4 cursor-grab active:cursor-grabbing transition-all duration-200 group ${
-        isCurrentlyDragging ? 'opacity-50 scale-105 shadow-glass-lg rotate-2' : 'hover:shadow-glass'
+      className={`glass-card task-card rounded-xl p-4 cursor-grab active:cursor-grabbing group ${
+        isOverlay ? 'task-card-overlay' : ''
+      } ${
+        isCurrentlyDragging ? 'task-card-dragging' : 'hover:shadow-glass'
       }`}
+      onPointerDownCapture={(e) => {
+        if (!onLongPress) return
+        if (e.pointerType !== 'touch') return
+
+        const startX = e.clientX
+        const startY = e.clientY
+        let cancelled = false
+        let timer: number | null = null
+
+        const cleanup = () => {
+          if (timer !== null) window.clearTimeout(timer)
+          window.removeEventListener('pointermove', onMove, true)
+          window.removeEventListener('pointerup', onUp, true)
+          window.removeEventListener('pointercancel', onUp, true)
+        }
+
+        const onMove = (ev: PointerEvent) => {
+          const dx = ev.clientX - startX
+          const dy = ev.clientY - startY
+          if (Math.hypot(dx, dy) > 6) {
+            cancelled = true
+            cleanup()
+          }
+        }
+
+        const onUp = () => cleanup()
+
+        window.addEventListener('pointermove', onMove, true)
+        window.addEventListener('pointerup', onUp, true)
+        window.addEventListener('pointercancel', onUp, true)
+
+        timer = window.setTimeout(() => {
+          if (cancelled) return
+          onLongPress()
+        }, longPressDelayMs)
+      }}
       {...attributes}
       {...listeners}
     >
