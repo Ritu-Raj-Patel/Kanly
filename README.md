@@ -138,7 +138,10 @@ kanboard/
 DATABASE_URL=postgresql://user:password@localhost:5432/kanboard
 NEXTAUTH_SECRET=random_secret_key
 NEXTAUTH_URL=http://localhost:3000
+ENABLE_DEBUG_ENDPOINTS=false
 ```
+
+`/api/debug/*` routes are disabled in production unless `ENABLE_DEBUG_ENDPOINTS=true`.
 
 ## Features - MVP
 

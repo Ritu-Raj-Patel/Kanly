@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     const user = await createUser(validatedData.email, passwordHash, validatedData.name)
 
-    const { password_hash, ...userWithoutPassword } = user
+    const { password_hash: _passwordHash, ...userWithoutPassword } = user
 
     return successResponse(
       { user: userWithoutPassword, message: 'User created successfully' },

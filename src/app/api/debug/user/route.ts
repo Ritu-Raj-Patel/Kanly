@@ -4,8 +4,14 @@ import { authOptions } from '@/lib/auth/config'
 import { getUserById, getUserByEmail } from '@/lib/db/queries'
 import db from '@/lib/db'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(_request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DEBUG_ENDPOINTS !== 'true') {
+      return new Response(null, { status: 404 })
+    }
+
     const session = await getServerSession(authOptions)
 
     if (!session) {
