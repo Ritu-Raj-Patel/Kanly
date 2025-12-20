@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(mkdir:*)"
+    ]
+  }
+}
