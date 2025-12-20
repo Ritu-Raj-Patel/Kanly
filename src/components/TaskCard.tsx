@@ -73,11 +73,9 @@ export default function TaskCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`glass-card task-card rounded-xl p-4 cursor-grab active:cursor-grabbing group ${
-        isOverlay ? 'task-card-overlay' : ''
-      } ${
-        isCurrentlyDragging ? 'task-card-dragging' : 'hover:shadow-glass'
-      }`}
+      className={`card task-card rounded-xl p-4 cursor-grab active:cursor-grabbing group ${isOverlay ? 'task-card-overlay' : ''
+        } ${isCurrentlyDragging ? 'task-card-dragging' : 'hover:bg-[var(--card-hover)]'
+        }`}
       onPointerDownCapture={(e) => {
         if (!onLongPress) return
         if (e.pointerType !== 'touch') return
@@ -118,16 +116,16 @@ export default function TaskCard({
       {...listeners}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h4 className="font-medium text-gray-900 text-sm leading-snug flex-1">{title}</h4>
+        <h4 className="font-medium text-primary text-sm leading-snug flex-1">{title}</h4>
         {onEdit && (
           <button
             onClick={(e) => {
               e.stopPropagation()
               onEdit()
             }}
-            className="w-6 h-6 rounded-md hover:bg-gray-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="w-6 h-6 rounded-md hover:bg-[var(--card-elevated)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
           </button>
@@ -135,7 +133,7 @@ export default function TaskCard({
       </div>
 
       {description && (
-        <p className="text-xs text-gray-500 mb-3 line-clamp-2">{description}</p>
+        <p className="text-xs text-muted mb-3 line-clamp-2">{description}</p>
       )}
 
       <div className="flex flex-wrap items-center gap-1.5">
@@ -150,8 +148,8 @@ export default function TaskCard({
             key={index}
             className="text-xs px-2 py-0.5 rounded-md font-medium"
             style={{
-              backgroundColor: label.color ? `${label.color}20` : '#f3f4f6',
-              color: label.color || '#4b5563',
+              backgroundColor: label.color ? `${label.color}20` : 'var(--card-hover)',
+              color: label.color || 'var(--text-secondary)',
             }}
           >
             {label.name}
@@ -159,9 +157,8 @@ export default function TaskCard({
         ))}
 
         {dueDate && (
-          <span className={`text-xs px-2 py-0.5 rounded-md flex items-center gap-1 ${
-            isOverdue ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
-          }`}>
+          <span className={`text-xs px-2 py-0.5 rounded-md flex items-center gap-1 ${isOverdue ? 'bg-red-500/20 text-red-500 border border-red-500/30' : 'bg-[var(--card-elevated)] text-secondary'
+            }`}>
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>

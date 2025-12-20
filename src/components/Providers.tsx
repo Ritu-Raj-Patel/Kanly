@@ -2,13 +2,16 @@
 
 import { SessionProvider } from 'next-auth/react'
 import { BoardProvider } from '@/contexts/BoardContext'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <BoardProvider>
-        {children}
-      </BoardProvider>
+      <ThemeProvider>
+        <BoardProvider>
+          {children}
+        </BoardProvider>
+      </ThemeProvider>
     </SessionProvider>
   )
 }

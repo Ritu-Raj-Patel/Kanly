@@ -34,7 +34,6 @@ export default function RegisterPage() {
 
       await authApi.register({ email, password, name })
 
-      // Auto sign in after registration
       const result = await signIn('credentials', {
         email,
         password,
@@ -56,19 +55,19 @@ export default function RegisterPage() {
   return (
     <div className="min-h-[calc(100vh-73px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
-        <div className="glass-card rounded-2xl p-8 animate-scale-in">
+        <div className="card-elevated rounded-2xl p-8 animate-scale-in">
           <div className="text-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-coral-500 flex items-center justify-center mx-auto mb-4">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
-            <p className="text-gray-500 mt-1">Start organizing your tasks today</p>
+            <h2 className="text-2xl font-bold text-primary">Create Account</h2>
+            <p className="text-muted mt-1">Start organizing your tasks today</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-start gap-3">
+            <div className="mb-6 p-4 bg-red-500/15 border border-red-500/30 text-red-500 rounded-xl text-sm flex items-start gap-3">
               <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -78,7 +77,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="name" className="block text-sm font-medium text-secondary mb-1.5">
                 Full Name
               </label>
               <input
@@ -87,13 +86,13 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full px-4 py-2.5 glass-input rounded-xl outline-none text-gray-900"
+                className="w-full px-4 py-2.5 input rounded-xl outline-none"
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="email" className="block text-sm font-medium text-secondary mb-1.5">
                 Email
               </label>
               <input
@@ -102,14 +101,14 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-2.5 glass-input rounded-xl outline-none text-gray-900"
+                className="w-full px-4 py-2.5 input rounded-xl outline-none"
                 required
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-secondary mb-1.5">
                 Password
               </label>
               <input
@@ -118,15 +117,15 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a password"
-                className="w-full px-4 py-2.5 glass-input rounded-xl outline-none text-gray-900"
+                className="w-full px-4 py-2.5 input rounded-xl outline-none"
                 required
                 disabled={loading}
               />
-              <p className="text-xs text-gray-500 mt-1.5">At least 8 characters</p>
+              <p className="text-xs text-muted mt-1.5">At least 8 characters</p>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-secondary mb-1.5">
                 Confirm Password
               </label>
               <input
@@ -135,7 +134,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
-                className="w-full px-4 py-2.5 glass-input rounded-xl outline-none text-gray-900"
+                className="w-full px-4 py-2.5 input rounded-xl outline-none"
                 required
                 disabled={loading}
               />
@@ -144,7 +143,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full glass-button-dark text-white font-medium py-2.5 px-4 rounded-xl disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full btn-accent font-medium py-2.5 px-4 rounded-xl disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -157,9 +156,9 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-muted">
             Already have an account?{' '}
-            <Link href="/auth/signin" className="text-gray-900 hover:text-gray-700 font-medium">
+            <Link href="/auth/signin" className="text-coral-500 hover:text-coral-400 font-medium">
               Sign In
             </Link>
           </p>
