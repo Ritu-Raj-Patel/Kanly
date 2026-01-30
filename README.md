@@ -1,4 +1,4 @@
-# Kanboard - Kanban Task Management MVP
+# Kanly - Kanban Task Management MVP
 
 A lightweight kanban task management application built with Next.js 14 and PostgreSQL.
 
@@ -15,7 +15,7 @@ A lightweight kanban task management application built with Next.js 14 and Postg
 ### Project Structure
 
 ```
-kanboard/
+kanly/
 ├── src/
 │   ├── app/
 │   │   ├── api/
@@ -135,7 +135,7 @@ kanboard/
 ## Environment Variables
 
 ```
-DATABASE_URL=postgresql://user:password@localhost:5432/kanboard
+DATABASE_URL=postgresql://user:password@localhost:5432/kanly
 NEXTAUTH_SECRET=random_secret_key
 NEXTAUTH_URL=http://localhost:3000
 ENABLE_DEBUG_ENDPOINTS=false
@@ -164,8 +164,8 @@ ENABLE_DEBUG_ENDPOINTS=false
 
 2. **Set up database**
    ```bash
-   createdb kanboard
-   psql kanboard < schema.sql
+   createdb kanly
+   psql kanly < schema.sql
    ```
 
 3. **Configure environment**

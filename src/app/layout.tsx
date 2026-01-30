@@ -7,7 +7,7 @@ import { Providers } from '@/components/Providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Kanboard',
+  title: 'Kanly',
   description: 'A modern kanban task management app',
 }
 

@@ -14,7 +14,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center">
           <Link href="/">
             <h1 className="text-2xl font-bold text-primary cursor-pointer tracking-tight">
-              Kanboard
+              Kanly
             </h1>
           </Link>
 
