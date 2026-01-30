@@ -3,6 +3,11 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { getUserByEmail } from '@/lib/db/queries'
 import { verifyPassword } from '@/lib/utils/auth'
 
+// Validate required environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  console.error('NEXTAUTH_SECRET is not set!')
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -12,26 +17,34 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password are required')
-        }
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.error('Auth error: Email and password are required')
+            return null
+          }
 
-        const user = await getUserByEmail(credentials.email)
+          const user = await getUserByEmail(credentials.email)
 
-        if (!user) {
-          throw new Error('No user found with this email')
-        }
+          if (!user) {
+            console.error('Auth error: No user found with email:', credentials.email)
+            return null
+          }
 
-        const isValid = await verifyPassword(credentials.password, user.password_hash)
+          const isValid = await verifyPassword(credentials.password, user.password_hash)
 
-        if (!isValid) {
-          throw new Error('Invalid password')
-        }
+          if (!isValid) {
+            console.error('Auth error: Invalid password for user:', credentials.email)
+            return null
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          }
+        } catch (error) {
+          console.error('Auth error:', error)
+          return null
         }
       },
     }),
